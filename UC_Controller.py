@@ -6,6 +6,7 @@ import os            #os
 import random
 import urllib        #url lib in check_internet_connect()
 import time          #time
+import socket
 import bluetooth     #bluetooth lib used in main()
 import Adafruit_GPIO.SPI as SPI     #display and pi
 import Adafruit_SSD1306             #display lib
@@ -51,7 +52,38 @@ v_status = False
 cs_status = False 
 t_status = False
 
-def bool Client():
+def Client():
+    
+    # create TCP/IP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # retrieve local hostname
+    local_hostname = socket.gethostname()
+
+    # get fully qualified hostname
+    local_fqdn = socket.getfqdn()
+
+    # get the according IP address
+    ip_address = socket.gethostbyname(local_hostname)
+
+    # bind the socket to the port 23456, and connect
+    server_address = (ip_address, 23456)
+    sock.connect(server_address)
+    print("connecting to %s (%s) with %s" % (local_hostname, local_fqdn, ip_address))
+
+    # define example data to be sent to the server
+    passenger_data = ["true", "false", "false", "true", "false", "true"]
+    for entry in passenger_data:
+        print("is there a passenger: %s" % entry)
+        new_data = str("Passenger: %s\n" % entry).encode("utf-8")
+        sock.sendall(new_data)
+
+        # wait for two seconds
+        time.sleep(2)
+
+    # close connection
+    sock.close()
+
     return True
 
 
