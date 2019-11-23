@@ -53,15 +53,20 @@ t_status = False
 def Client():
     status = False                                             #set local status to false
     #create socket AF_INET refers to ipv4 and SOCK_STREAM means connection is TCP
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #
+    try:
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #
+    except socket.error, err_msg
+        print "Socket Creation failed: %s\n terminating program" % err_msg             #print console
+        print("System Shut down")
+        raise SystemExit()  
     try:
         #client.connect(('0,0,0,0', 8080))
         client.connect(('10.0.0.55', 6000))     #connect to server ip on port 6000
-    except:
+    except socket.error, err_msg:
         print_oled("Connection", "to Server", "Failed", False) #print to oled
         print_oled("System", "Shut", "down", False) 
-        print "Connection with server failed"            #print console
-        print("Shut down")
+        print "Socket Connection failed with server: %s\n terminating program" % err_msg             #print console
+        print("System Shut down")
         raise SystemExit()  
      
     client.send("Server Start\n")           #send start command to server
